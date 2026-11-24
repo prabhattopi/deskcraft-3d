@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { PwaManager } from "@/components/ui/PwaManager";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,6 +17,11 @@ export const metadata: Metadata = {
   title: "DeskCraft 3D — Interactive Cozy Workspace Configurator",
   description:
     "Design, customize, light, and share your dream 3D developer & creative desk setup right in your browser.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "DeskCraft 3D",
+  },
 };
 
 export const viewport: Viewport = {
@@ -36,6 +42,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0b0d12] text-zinc-100`}
       >
         {children}
+        <PwaManager />
       </body>
     </html>
   );
