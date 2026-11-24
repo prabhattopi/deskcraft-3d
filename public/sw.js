@@ -1,4 +1,4 @@
-const CACHE_NAME = "deskcraft-3d-v1";
+const CACHE_NAME = "deskcraft-3d-v2";
 const PRECACHE_ASSETS = ["/", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {

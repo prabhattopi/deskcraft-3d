@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { ShareableWorkspacePayload } from "@/lib/workspaceShare";
 import {
   CameraPreset,
   DESK_DIMENSIONS,
@@ -93,6 +94,7 @@ interface WorkspaceState {
   selectItem: (id: string | null) => void;
   setIsDraggingItem: (dragging: boolean) => void;
   setItems: (items: DeskItem[]) => void;
+  hydrateWorkspace: (payload: ShareableWorkspacePayload) => void;
 
   addItem: (type: DeskItemType) => void;
   moveItem: (id: string, x: number, z: number) => void;
@@ -120,6 +122,16 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   selectItem: (selectedItemId) => set({ selectedItemId }),
   setIsDraggingItem: (isDraggingItem) => set({ isDraggingItem }),
   setItems: (items) => set({ items }),
+
+    hydrateWorkspace: (payload) =>
+    set({
+      deskFinish: payload.deskFinish,
+      lightingMood: payload.lightingMood,
+      cameraPreset: payload.cameraPreset,
+      gridVisible: payload.gridVisible,
+      items: payload.items,
+      selectedItemId: null,
+    }),
 
   addItem: (type) => {
     const meta = ITEM_CATALOG.find((item) => item.type === type);
@@ -202,6 +214,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       items: STARTER_ITEMS,
       selectedItemId: null,
       deskFinish: "oak",
+      lightingMood: "daylight",
     }),
 
   clearWorkspace: () =>
