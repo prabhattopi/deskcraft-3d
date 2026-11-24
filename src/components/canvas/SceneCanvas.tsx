@@ -1,19 +1,22 @@
 "use client";
 
 import { Suspense } from "react";
+import * as THREE from "three";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { RoomEnvironment } from "./RoomEnvironment";
 import { DeskAssembly } from "./DeskAssembly";
+import { DeskItemsLayer } from "./DeskItemsLayer";
 import { useWorkspaceStore } from "@/store/useWorkspaceStore";
 
 export function SceneCanvas() {
   const selectItem = useWorkspaceStore((s) => s.selectItem);
+  const isDraggingItem = useWorkspaceStore((s) => s.isDraggingItem);
 
   return (
     <div className="relative h-full w-full">
       <Canvas
-        shadows
+        shadows={{ type: THREE.PCFShadowMap }}
         dpr={[1, 2]}
         camera={{ position: [2.15, 1.85, 2.25], fov: 42, near: 0.1, far: 50 }}
         gl={{
@@ -29,10 +32,12 @@ export function SceneCanvas() {
         <Suspense fallback={null}>
           <RoomEnvironment />
           <DeskAssembly />
+          <DeskItemsLayer />
         </Suspense>
 
         <OrbitControls
           makeDefault
+          enabled={!isDraggingItem}
           enableDamping
           dampingFactor={0.06}
           target={[0, 0.82, -0.45]}

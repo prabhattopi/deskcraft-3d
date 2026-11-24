@@ -2,6 +2,8 @@
 
 import { Grid3X3, Sparkles } from "lucide-react";
 import { SceneCanvas } from "@/components/canvas/SceneCanvas";
+import { ItemDock } from "@/components/ui/ItemDock";
+import { ItemInspector } from "@/components/ui/ItemInspector";
 import { useWorkspaceStore } from "@/store/useWorkspaceStore";
 import { DESK_FINISH_PALETTE, DeskFinish } from "@/types/workspace";
 
@@ -29,7 +31,7 @@ export default function HomePage() {
               DeskCraft 3D
             </h1>
             <p className="text-[11px] text-zinc-400">
-              Drag to orbit • Scroll to zoom • Right-drag to pan
+              Click & drag props on desk • Orbit around room
             </p>
           </div>
         </div>
@@ -78,6 +80,12 @@ export default function HomePage() {
           </button>
         </div>
       </header>
+
+      {/* Right Floating Inspector for Selected 3D Prop */}
+      <ItemInspector />
+
+      {/* Bottom Dock to Spawn / Reset / Clear 3D Props */}
+      <ItemDock />
     </main>
   );
 }

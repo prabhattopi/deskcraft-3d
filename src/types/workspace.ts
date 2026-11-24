@@ -23,6 +23,13 @@ export interface DeskItem {
   color: string;
 }
 
+export interface CatalogItemMeta {
+  type: DeskItemType;
+  label: string;
+  defaultColor: string;
+  ringRadius: number;
+}
+
 export const DESK_DIMENSIONS = {
   WIDTH: 2.4,
   DEPTH: 1.1,
@@ -32,6 +39,7 @@ export const DESK_DIMENSIONS = {
   MAT_DEPTH: 0.42,
   MAT_THICKNESS: 0.004,
   GRID_STEP: 0.08,
+  DESK_Z_OFFSET: -0.55,
 } as const;
 
 export const DESK_SURFACE_Y =
@@ -70,3 +78,23 @@ export const DESK_FINISH_PALETTE: Record<
     leg: "#10b981",
   },
 };
+
+export const ITEM_CATALOG: CatalogItemMeta[] = [
+  { type: "monitor", label: "Ultrawide 34\"", defaultColor: "#18181b", ringRadius: 0.28 },
+  { type: "keyboard", label: "Mech 75%", defaultColor: "#3f3f46", ringRadius: 0.22 },
+  { type: "mouse", label: "Pro Mouse", defaultColor: "#f4f4f5", ringRadius: 0.09 },
+  { type: "lamp", label: "Desk Lamp", defaultColor: "#f59e0b", ringRadius: 0.13 },
+  { type: "speaker", label: "Studio Monitor", defaultColor: "#27272a", ringRadius: 0.13 },
+  { type: "plant", label: "Monstera Pot", defaultColor: "#d97706", ringRadius: 0.12 },
+  { type: "mug", label: "Coffee Mug", defaultColor: "#10b981", ringRadius: 0.08 },
+  { type: "notebook", label: "Dot Journal", defaultColor: "#3b82f6", ringRadius: 0.14 },
+];
+
+export const ITEM_COLOR_SWATCHES = [
+  { name: "Obsidian", hex: "#18181b" },
+  { name: "Arctic", hex: "#f4f4f5" },
+  { name: "Emerald", hex: "#10b981" },
+  { name: "Amber", hex: "#f59e0b" },
+  { name: "Terracotta", hex: "#ea580c" },
+  { name: "Cobalt", hex: "#3b82f6" },
+] as const;
