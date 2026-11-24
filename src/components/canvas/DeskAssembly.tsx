@@ -6,14 +6,27 @@ import {
   DESK_DIMENSIONS,
   DESK_FINISH_PALETTE,
   DESK_SURFACE_Y,
+  LightingMood,
 } from "@/types/workspace";
+
+const LED_MOOD_STYLE: Record<
+  LightingMood,
+  { color: string; emissive: string; intensity: number }
+> = {
+  daylight: { color: "#52525b", emissive: "#34d399", intensity: 0.2 },
+  sunset: { color: "#fdba74", emissive: "#f97316", intensity: 1.6 },
+  cyberpunk: { color: "#67e8f9", emissive: "#10b981", intensity: 2.3 },
+};
 
 export function DeskAssembly() {
   const deskFinish = useWorkspaceStore((s) => s.deskFinish);
+  const lightingMood = useWorkspaceStore((s) => s.lightingMood);
   const gridVisible = useWorkspaceStore((s) => s.gridVisible);
   const selectItem = useWorkspaceStore((s) => s.selectItem);
 
   const palette = DESK_FINISH_PALETTE[deskFinish];
+  const ledStyle = LED_MOOD_STYLE[lightingMood];
+
   const {
     WIDTH,
     DEPTH,
@@ -23,6 +36,7 @@ export function DeskAssembly() {
     MAT_DEPTH,
     MAT_THICKNESS,
     GRID_STEP,
+    DESK_Z_OFFSET,
   } = DESK_DIMENSIONS;
 
   const tabletopCenterY = TOP_Y - THICKNESS / 2;
@@ -31,7 +45,7 @@ export function DeskAssembly() {
   const legXOffset = WIDTH / 2 - 0.24;
 
   return (
-    <group name="desk-assembly" position={[0, 0, -0.55]}>
+    <group name="desk-assembly" position={[0, 0, DESK_Z_OFFSET]}>
       {/* Main Beveled Wooden Tabletop */}
       <RoundedBox
         args={[WIDTH, THICKNESS, DEPTH]}
@@ -52,10 +66,20 @@ export function DeskAssembly() {
         />
       </RoundedBox>
 
+      {/* Rear Desk Edge RGB / Warm LED Light Strip */}
+      <mesh position={[0, tabletopCenterY, -DEPTH / 2 - 0.004]}>
+        <boxGeometry args={[WIDTH - 0.2, 0.016, 0.008]} />
+        <meshStandardMaterial
+          color={ledStyle.color}
+          emissive={ledStyle.emissive}
+          emissiveIntensity={ledStyle.intensity}
+          roughness={0.2}
+        />
+      </mesh>
+
       {/* Left & Right Industrial T-Frame Legs */}
       {[-legXOffset, legXOffset].map((xPos, idx) => (
         <group key={idx} position={[xPos, 0, 0]}>
-          {/* Vertical Column */}
           <mesh position={[0, legCenterY, 0]} castShadow receiveShadow>
             <boxGeometry args={[0.065, legHeight, 0.085]} />
             <meshStandardMaterial
@@ -64,7 +88,6 @@ export function DeskAssembly() {
               metalness={0.75}
             />
           </mesh>
-          {/* Top Mounting Bracket */}
           <mesh position={[0, legHeight - 0.015, 0]} castShadow>
             <boxGeometry args={[0.09, 0.03, DEPTH - 0.26]} />
             <meshStandardMaterial
@@ -73,7 +96,6 @@ export function DeskAssembly() {
               metalness={0.75}
             />
           </mesh>
-          {/* Floor Foot Ski */}
           <mesh position={[0, 0.018, 0]} castShadow receiveShadow>
             <boxGeometry args={[0.08, 0.036, DEPTH - 0.18]} />
             <meshStandardMaterial

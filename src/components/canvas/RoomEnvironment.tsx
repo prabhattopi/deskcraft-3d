@@ -1,8 +1,81 @@
 "use client";
 
 import { ContactShadows, Environment, Lightformer } from "@react-three/drei";
+import { useWorkspaceStore } from "@/store/useWorkspaceStore";
+import { LightingMood } from "@/types/workspace";
+
+interface MoodLightingSpec {
+  ambientColor: string;
+  ambientIntensity: number;
+  keyColor: string;
+  keyIntensity: number;
+  keyPosition: [number, number, number];
+  rimColor: string;
+  rimIntensity: number;
+  windowColor: string;
+  windowEmissive: string;
+  windowIntensity: number;
+  topLightformer: string;
+  sideLightformer: string;
+  pointGlowColor: string;
+  pointGlowIntensity: number;
+}
+
+const MOOD_SPECS: Record<LightingMood, MoodLightingSpec> = {
+  daylight: {
+    ambientColor: "#f8fafc",
+    ambientIntensity: 0.48,
+    keyColor: "#fffbeb",
+    keyIntensity: 1.6,
+    keyPosition: [3.5, 5.5, 3.2],
+    rimColor: "#93c5fd",
+    rimIntensity: 0.45,
+    windowColor: "#fef3c7",
+    windowEmissive: "#fde68a",
+    windowIntensity: 0.65,
+    topLightformer: "#fff7ed",
+    sideLightformer: "#bae6fd",
+    pointGlowColor: "#fef3c7",
+    pointGlowIntensity: 0.15,
+  },
+  sunset: {
+    ambientColor: "#fed7aa",
+    ambientIntensity: 0.36,
+    keyColor: "#fb923c",
+    keyIntensity: 1.75,
+    keyPosition: [-3.8, 3.2, 2.6],
+    rimColor: "#c084fc",
+    rimIntensity: 0.65,
+    windowColor: "#fdba74",
+    windowEmissive: "#f97316",
+    windowIntensity: 1.15,
+    topLightformer: "#fed7aa",
+    sideLightformer: "#f472b6",
+    pointGlowColor: "#fb923c",
+    pointGlowIntensity: 0.55,
+  },
+  cyberpunk: {
+    ambientColor: "#1e1b4b",
+    ambientIntensity: 0.34,
+    keyColor: "#38bdf8",
+    keyIntensity: 1.25,
+    keyPosition: [2.8, 4.8, 2.5],
+    rimColor: "#e879f9",
+    rimIntensity: 1.15,
+    windowColor: "#312e81",
+    windowEmissive: "#6366f1",
+    windowIntensity: 0.85,
+    topLightformer: "#38bdf8",
+    sideLightformer: "#e879f9",
+    pointGlowColor: "#34d399",
+    pointGlowIntensity: 0.9,
+  },
+};
 
 export function RoomEnvironment() {
+  const lightingMood = useWorkspaceStore((s) => s.lightingMood);
+  const spec = MOOD_SPECS[lightingMood];
+
   return (
     <group name="room-diorama">
       {/* Procedural HDR Environment Reflections (100% offline GPU-generated) */}
@@ -10,22 +83,22 @@ export function RoomEnvironment() {
         <Lightformer
           form="rect"
           intensity={2.0}
-          color="#fff7ed"
+          color={spec.topLightformer}
           position={[0, 4.5, 2]}
           scale={[6, 3, 1]}
           rotation={[Math.PI / 3, 0, 0]}
         />
         <Lightformer
           form="rect"
-          intensity={1.0}
-          color="#bae6fd"
+          intensity={1.1}
+          color={spec.sideLightformer}
           position={[-4, 2.5, 0]}
           scale={[4, 3, 1]}
           rotation={[0, Math.PI / 2, 0]}
         />
         <Lightformer
           form="rect"
-          intensity={0.8}
+          intensity={0.9}
           color="#ddd6fe"
           position={[4, 2, -2]}
           scale={[4, 3, 1]}
@@ -33,12 +106,12 @@ export function RoomEnvironment() {
         />
       </Environment>
 
-      {/* Base Studio Lighting */}
-      <ambientLight intensity={0.45} color="#f8fafc" />
+      {/* Dynamic Mood Lighting */}
+      <ambientLight color={spec.ambientColor} intensity={spec.ambientIntensity} />
       <directionalLight
-        position={[3.5, 5.5, 3.2]}
-        intensity={1.55}
-        color="#fffbeb"
+        position={spec.keyPosition}
+        intensity={spec.keyIntensity}
+        color={spec.keyColor}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -52,15 +125,20 @@ export function RoomEnvironment() {
       />
       <directionalLight
         position={[-3, 2.5, -2]}
-        intensity={0.45}
-        color="#93c5fd"
+        intensity={spec.rimIntensity}
+        color={spec.rimColor}
+      />
+
+      {/* Ambient Desk Back-Wall Glow Light */}
+      <pointLight
+        position={[0, 1.05, -1.25]}
+        color={spec.pointGlowColor}
+        intensity={spec.pointGlowIntensity}
+        distance={3.2}
       />
 
       {/* Room Floor Slab */}
-      <mesh
-        position={[0, -0.04, 0]}
-        receiveShadow
-      >
+      <mesh position={[0, -0.04, 0]} receiveShadow>
         <boxGeometry args={[4.4, 0.08, 3.8]} />
         <meshStandardMaterial color="#181b22" roughness={0.85} metalness={0.05} />
       </mesh>
@@ -97,24 +175,21 @@ export function RoomEnvironment() {
         <meshStandardMaterial color="#2e3444" roughness={0.7} />
       </mesh>
 
-      {/* Architectural Window on Left Wall (Warm Sky Glow) */}
+      {/* Architectural Window on Left Wall */}
       <group position={[-2.11, 1.55, -0.15]}>
-        {/* Outer Window Frame */}
         <mesh>
           <boxGeometry args={[0.04, 1.25, 1.45]} />
           <meshStandardMaterial color="#111318" roughness={0.5} />
         </mesh>
-        {/* Glowing Glass Pane */}
         <mesh position={[0.015, 0, 0]}>
           <boxGeometry args={[0.02, 1.13, 1.33]} />
           <meshStandardMaterial
-            color="#fef3c7"
-            emissive="#fde68a"
-            emissiveIntensity={0.65}
+            color={spec.windowColor}
+            emissive={spec.windowEmissive}
+            emissiveIntensity={spec.windowIntensity}
             roughness={0.2}
           />
         </mesh>
-        {/* Window Mullion Crossbars */}
         <mesh position={[0.025, 0, 0]}>
           <boxGeometry args={[0.02, 1.15, 0.035]} />
           <meshStandardMaterial color="#111318" roughness={0.5} />

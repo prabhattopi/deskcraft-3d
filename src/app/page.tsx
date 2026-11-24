@@ -4,6 +4,7 @@ import { Grid3X3, Sparkles } from "lucide-react";
 import { SceneCanvas } from "@/components/canvas/SceneCanvas";
 import { ItemDock } from "@/components/ui/ItemDock";
 import { ItemInspector } from "@/components/ui/ItemInspector";
+import { StudioToolbar } from "@/components/ui/StudioToolbar";
 import { useWorkspaceStore } from "@/store/useWorkspaceStore";
 import { DESK_FINISH_PALETTE, DeskFinish } from "@/types/workspace";
 
@@ -80,6 +81,9 @@ export default function HomePage() {
           </button>
         </div>
       </header>
+
+      {/* Left Floating Lighting & Camera Studio Toolbar */}
+      <StudioToolbar />
 
       {/* Right Floating Inspector for Selected 3D Prop */}
       <ItemInspector />
